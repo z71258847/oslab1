@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 		
 		for (int i=defined; i<defined+defines[f]; i++) {
 			if (define_table[i].addr >= cur) {
-				cout << "Error: The symbol '" << define_table[i].key << "' was defined exceeding the size of the module. It has been given the address 0(relative)." << endl;
+				cout << "Error: The symbol '" << define_table[i].key << "' was defined exceeding the size of the module" << f << ". It has been given the address 0(relative)." << endl;
 				define_table[i].addr = cur - x;
 			}
 		}
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 				int op = instruct_table[addr] / 10000;
 				int ex = instruct_table[addr] % 10;
 				int temp_add = instruct_table[addr] % 10000 / 10;
-				if (ex == 1) cout << "Error: The instruction '" << instruct_table[addr] << "' was an immediate address but appears on a use list. It has been treated as external" << endl;
+				if (ex == 1) cout << "Error: The instruction '" << instruct_table[addr] << "' in module " << f << " was an immediate address but appears on a use list. It has been treated as external" << endl;
 				ans[addr] = op*1000+use_addr;
 				instruct_use[addr] = true;
 				if (instruct_table[addr] % 10000 / 10 == 777) list_end=true;
@@ -126,14 +126,15 @@ int main(int argc, char* argv[]) {
 				else if (ex == 2) ans[cur+i]=op*1000+temp_add;
 				else if (ex == 3) ans[cur+i]=op*1000+temp_add+cur;
 				else if (ex == 4) {
-					cout << "Error: The instruction '" << instruct_table[cur+i] << "' was an external address but didn't appear on a use list. It has been treated as immediate" << endl;
+					cout << "Error: The instruction '" << instruct_table[cur+i] << "' in module " << f << " was an external address but didn't appear on a use list. It has been treated as immediate" << endl;
 					ans[cur+i]=op*1000+temp_add;
 				}
 			}
 		}
 		cur += instructs[f];
 	}
-	for (size_t i=0; i<define_table.size(); i++) {
+	
+	for (int i=0; i< define_table.size(); i++) {
 		if (define_use[i] == false) cout <<"Warning: The symbol '" << define_table[i].key << "' was defined but not used." << endl;
 	}
 	
@@ -142,6 +143,7 @@ int main(int argc, char* argv[]) {
 		cout << define_table[i].key << "=" << define_table[i].addr << endl;
 	}
 	cout << endl;
+	
 	cout << "Memory Map" << endl;
 	for (size_t i=0; i<instruct_table.size(); i++) {
 		cout << i << ": " << ans[i] << endl;
